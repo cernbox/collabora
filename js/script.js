@@ -59,7 +59,7 @@
 		// }); 
 
 		//hardcode for now... //TODO
-		collaboraApp = "https://collabora.cern.ch:9980/loleaflet/dde4073/loleaflet.html&WOPISrc="; //?permission=readonly
+		collaboraApp = "https://collabora.cern.ch:9980/loleaflet/dde4073/loleaflet.html"; //?permission=readonly
 	}
 
 	var closeDocument = function (e) {
@@ -134,13 +134,14 @@
 		$.post(url, data).success(function (response) {
 			if (response.wopi_src) {
 				window.location.hash = 'office';
-				var viewerURL = collaboraApp + encodeURI(response.wopi_src);
+				var viewerURL = collaboraApp + "?WOPISrc=" + encodeURI(response.wopi_src);
 				if (canedit) {
-					viewerURL += "&permission=readonly"
-				} else {
 					viewerURL += "&permission=edit"
+				} else {
+					viewerURL += "&permission=readonly"
 				}
-				setView(viewerURL, response.wopi_src, basename);
+				// setView(viewerURL, response.wopi_src, basename);
+				window.open(viewerURL,'_blank'); //Collabora is preventing the app from being used inside an iframe
 			} else {
 				console.error(response.error);
 			}

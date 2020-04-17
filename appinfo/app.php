@@ -19,7 +19,7 @@ $app = new App('collabora');
 $container = $app->getContainer();
 
 
-$domains = \OC::$server->getConfig()->getSystemValue( ['https://collabora.cern.ch']);
+$domains = \OC::$server->getConfig()->getSystemValue("cbox.wopi.officeonline", ['https://collabora.cern.ch', 'https://collabora.cern.ch:9980', 'http://wopiserver-test:8080']);
 $policy = new \OCP\AppFramework\Http\EmptyContentSecurityPolicy();
 foreach($domains as $domain) {
 	$policy->addAllowedScriptDomain($domain);
