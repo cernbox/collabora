@@ -14,11 +14,14 @@
 	// the hack for owncloud 8 for having the new file menu entry can work.
 	OCA.Collabora = {};
 
-	var supportedMimes = [
+	var defaultMimes = [
 		'application/vnd.oasis.opendocument.text',
 		'application/vnd.oasis.opendocument.spreadsheet',
 		'application/vnd.oasis.opendocument.graphics',
-		'application/vnd.oasis.opendocument.presentation',
+		'application/vnd.oasis.opendocument.presentation'
+	]
+
+	var supportedMimes = [
 		'application/vnd.lotus-wordpro',
 		'image/svg+xml',
 		'application/vnd.visio',
@@ -170,6 +173,71 @@
 			for (i = 0; i < supportedMimes.length; ++i) {
 				OCA.Files.fileActions.register(supportedMimes[i], 'Open in Collabora', OC.PERMISSION_UPDATE, OC.imagePath('collabora', 'app.svg'), sendOpen);
 			}
+			for (i = 0; i < defaultMimes.length; ++i) {
+				OCA.Files.fileActions.register(defaultMimes[i], 'Open in Collabora', OC.PERMISSION_UPDATE, OC.imagePath('collabora', 'app.svg'), sendOpen);
+				OCA.Files.fileActions.setDefault(defaultMimes[i], 'Open in Collabora');
+			}
+
+			OC.Plugins.register("OCA.Files.NewFileMenu", {
+				attach: function (menu) {
+					var fileList = menu.fileList;
+		
+					if (fileList.id !== "files") {
+						return;
+					}
+		
+					menu.addMenuEntry({
+						id: "odt",
+						displayName: t(OCA.Collabora.AppName, "Document (odt)"),
+						templateName:  'New document.odt',
+						iconClass: "icon-word",
+						fileType: "file",
+						actionHandler: function (name) {
+							// first create the file
+							fileList.createFile(name).then(function() {
+								// once the file got successfully created,
+								// open the editor
+								var selector = 'tr[data-file="'+ name +'"]';
+								fileList.$container.find(selector).find("span.nametext").click();
+							});
+						}
+					});
+		
+					menu.addMenuEntry({
+						id: "ods",
+						displayName: t(OCA.Collabora.AppName, "Spreadsheet (ods)"),
+						templateName:  'New Spreadsheet.ods',
+						iconClass: "icon-excel",
+						fileType: "file",
+						actionHandler: function (name) {
+							// first create the file
+							fileList.createFile(name).then(function() {
+								// once the file got successfully created,
+								// open the editor
+								var selector = 'tr[data-file="'+ name +'"]';
+								fileList.$container.find(selector).find("span.nametext").click();
+							});
+						}
+					});
+		
+					menu.addMenuEntry({
+						id: "odp",
+						displayName: t(OCA.Onlyoffice.AppName, "Presentation (odp)"),
+						templateName:  'New presentation.odp',
+						iconClass: 'icon-powerpoint',
+						fileType: "file",
+						actionHandler: function (name) {
+							// first create the file
+							fileList.createFile(name).then(function() {
+								// once the file got successfully created,
+								// open the editor
+								var selector = 'tr[data-file="'+ name +'"]';
+								fileList.$container.find(selector).find("span.nametext").click();
+							});
+						}
+					});
+				}
+			});
 		}
 
 	});
