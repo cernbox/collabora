@@ -10,8 +10,8 @@
 
 (function ($, OC, OCA) {	// just put Collabora in global namespace so 
 
-	// just put Collabora in global namespace so 
-	// the hack for owncloud 8 for having the new file menu entry can work.
+	var iFrame = true;
+	
 	OCA.Collabora = {};
 
 	var defaultMimes = [
@@ -61,14 +61,12 @@
 		// 	collaboraApp = response + "&WOPISrc=";
 		// }); 
 
-		//hardcode for now... //TODO
-		collaboraApp = "https://collabora.cern.ch:9980/loleaflet/dde4073/loleaflet.html"; //?permission=readonly
+		//hardcode for now instead of getting the config... //TODO
+		collaboraApp = "https://" + window.location.hostname + "/byoa/collabora/loleaflet/dde4073/loleaflet.html";
 	}
 
 	var closeDocument = function (e) {
-		e.preventDefault();
 		$("#office_container").remove();
-		//$("header div#header #office_close_button").remove();
 		window.location.hash = '';
 		$(window).unbind('popstate', closeDocument);
 	};
@@ -92,6 +90,30 @@
 		// when using PowerPoint Online's 'view' action.
 		office_frame.setAttribute('allowfullscreen', 'true');
 		office_frame.src = actionURL;
+
+
+		// And start listening to incoming post messages
+		window.addEventListener('message', function(e){
+			var msg, msgId;
+			try {
+				msg = JSON.parse(e.data);
+				msgId = msg.MessageId;
+				var args = msg.Values;
+				var deprecated = !!args.Deprecated;
+			} catch(exc) {
+				msgId = e.data;
+			}
+
+			if (msgId === 'UI_Close' || msgId === 'close' /* deprecated */) {
+				// If a postmesage API is deprecated, we must ignore it and wait for the standard postmessage
+				// (or it might already have been fired)
+				if (deprecated)
+					return;
+
+				closeDocument();
+			} 
+		});
+
 		frameholder.appendChild(office_frame);
 	};
 
@@ -138,13 +160,18 @@
 			if (response.wopi_src) {
 				window.location.hash = 'office';
 				var viewerURL = collaboraApp + "?WOPISrc=" + encodeURI(response.wopi_src);
-				if (canedit) {
-					viewerURL += "&permission=edit"
-				} else {
-					viewerURL += "&permission=readonly"
+				if (iFrame) {
+					viewerURL += "&closebutton=1";
 				}
-				// setView(viewerURL, response.wopi_src, basename);
-				window.open(viewerURL,'_blank'); //Collabora is preventing the app from being used inside an iframe
+				if (!canedit) {
+					viewerURL += "&permission=readonly";
+				}
+
+				if (iFrame) {
+					setView(viewerURL, response.wopi_src, basename);
+				} else {
+					window.open(viewerURL,'_blank');
+				}
 			} else {
 				console.error(response.error);
 			}
