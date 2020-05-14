@@ -55,14 +55,22 @@
 	var collaboraApp;
 
 	var loadConfig = function() {
-		// var url = OC.generateUrl('/apps/collabora/config');
-		// $.get(url).success(function (response) {
-		// 	OCA.Collabora.endPoints = response;
-		// 	collaboraApp = response + "&WOPISrc=";
-		// }); 
-
-		//hardcode for now instead of getting the config... //TODO
-		collaboraApp = "https://" + window.location.hostname + "/byoa/collabora/loleaflet/dde4073/loleaflet.html";
+		// For now just use the endpoints provided by wopi
+		var url = OC.generateUrl('/apps/wopiviewer/config');
+		$.get(url).success(function (response) {
+			try {
+				var givenUrl = response['.odt'].view;
+				var match = givenUrl.match(/\/byoa\/collabora\/loleaflet\/(.+)\/loleaflet.html/i)[0];
+				collaboraApp = "https://" + window.location.hostname + match;
+			} catch (error) {
+				OC.Notification.showTemporary("Failed to load Collabora");
+				console.error('Failed to load Collabora endpoint', error);
+			}
+		})
+		.error(function (error) {
+			OC.Notification.showTemporary("Failed to load Collabora");
+			console.error('Failed to load Collabora endpoint', error);
+		}); 
 	}
 
 	var closeDocument = function (e) {
@@ -136,6 +144,12 @@
 	};
 
 	var sendOpen = function (basename, data) {
+
+		if (!collaboraApp) {
+			OC.Notification.showTemporary("Failed to load Collabora");
+			return;
+		}
+
 		var canedit = false;
 		var permissions = data.$file.attr("data-permissions");
 		if (permissions > 1) { // > 1 write permissions
