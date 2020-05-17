@@ -192,19 +192,54 @@
 		});
 	};
 
-	var getUrlParameter = function getUrlParameter (sParam) {
-		var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-			sURLVariables = sPageURL.split('&'),
-			sParameterName,
-			i;
-		for (i = 0; i < sURLVariables.length; i++) {
-			sParameterName = sURLVariables[i].split('=');
+    var createFile = function (name, fileList) {
+        var dir = fileList.getCurrentDirectory();
 
-			if (sParameterName[0] === sParam) {
-				return sParameterName[1] === undefined ? true : sParameterName[1];
+        $.post(OC.generateUrl("apps/collabora/new"),
+            {
+                name: name,
+                dir: dir
+            },
+            function onSuccess(response) {
+                if (response.error) {
+					OC.Notification.showTemporary("Failed to create the Collabora file");
+					console.error('Failed to create Collabora file', response.error);
+                    return;
+				}
+				
+				var targetPath = dir + '/' + name;
+
+				fileList.addAndFetchFileInfo(targetPath, '', {scrollTo: true}).then(function(status, data) {
+
+					var row = OC.Notification.show(t(OCA.Collabora.AppName, "File created"));
+					setTimeout(function () {
+						OC.Notification.hide(row);
+					}, 3000);
+
+					var selector = 'tr[data-file="'+ name +'"]';
+					fileList.$container.find(selector).find("span.nametext").click();
+				}, function() {
+					OC.Notification.show(t('files', 'Could not create file "{file}"',
+						{file: name}), {type: 'error'}
+					);
+				});
+
+
+            }
+        )
+		.fail(function(status) {
+			if (status === 412) {
+				OC.Notification.show(t('files', 'Could not create file "{file}" because it already exists',
+					{file: name}), {type: 'error'}
+				);
+			} else {
+				OC.Notification.show(t('files', 'Could not create file "{file}"',
+					{file: name}), {type: 'error'}
+				);
 			}
-		}
-	};
+			deferred.reject(status);
+		});
+    };
 
 
 	$(document).ready(function () {
@@ -234,13 +269,7 @@
 						iconClass: "icon-word",
 						fileType: "file",
 						actionHandler: function (name) {
-							// first create the file
-							fileList.createFile(name).then(function() {
-								// once the file got successfully created,
-								// open the editor
-								var selector = 'tr[data-file="'+ name +'"]';
-								fileList.$container.find(selector).find("span.nametext").click();
-							});
+							createFile(name, fileList);
 						}
 					});
 		
@@ -251,13 +280,7 @@
 						iconClass: "icon-excel",
 						fileType: "file",
 						actionHandler: function (name) {
-							// first create the file
-							fileList.createFile(name).then(function() {
-								// once the file got successfully created,
-								// open the editor
-								var selector = 'tr[data-file="'+ name +'"]';
-								fileList.$container.find(selector).find("span.nametext").click();
-							});
+							createFile(name, fileList);
 						}
 					});
 		
@@ -268,13 +291,7 @@
 						iconClass: 'icon-powerpoint',
 						fileType: "file",
 						actionHandler: function (name) {
-							// first create the file
-							fileList.createFile(name).then(function() {
-								// once the file got successfully created,
-								// open the editor
-								var selector = 'tr[data-file="'+ name +'"]';
-								fileList.$container.find(selector).find("span.nametext").click();
-							});
+							createFile(name, fileList);
 						}
 					});
 				}
