@@ -247,10 +247,10 @@
 
 		if (OCA.Files != null) {
 			for (i = 0; i < supportedMimes.length; ++i) {
-				OCA.Files.fileActions.register(supportedMimes[i], 'Open in Collabora', OC.PERMISSION_UPDATE, OC.imagePath('collabora', 'app.svg'), sendOpen);
+				OCA.Files.fileActions.register(supportedMimes[i], 'Open in Collabora', OC.PERMISSION_READ, OC.imagePath('collabora', 'app.svg'), sendOpen);
 			}
 			for (i = 0; i < defaultMimes.length; ++i) {
-				OCA.Files.fileActions.register(defaultMimes[i], 'Open in Collabora', OC.PERMISSION_UPDATE, OC.imagePath('collabora', 'app.svg'), sendOpen);
+				OCA.Files.fileActions.register(defaultMimes[i], 'Open in Collabora', OC.PERMISSION_READ, OC.imagePath('collabora', 'app.svg'), sendOpen);
 				OCA.Files.fileActions.setDefault(defaultMimes[i], 'Open in Collabora');
 			}
 
