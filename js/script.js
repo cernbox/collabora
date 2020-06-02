@@ -147,6 +147,7 @@
 
 		if (!collaboraApp) {
 			OC.Notification.showTemporary("Failed to load Collabora");
+			console.error("Collabora app still didn't load")
 			return;
 		}
 
@@ -286,7 +287,7 @@
 		
 					menu.addMenuEntry({
 						id: "odp",
-						displayName: t(OCA.Onlyoffice.AppName, "Presentation (odp)"),
+						displayName: t(OCA.Collabora.AppName, "Presentation (odp)"),
 						templateName:  'New presentation.odp',
 						iconClass: 'icon-powerpoint',
 						fileType: "file",
