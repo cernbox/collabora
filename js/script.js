@@ -174,7 +174,7 @@
 		$.post(url, data).success(function (response) {
 			if (response.wopi_src) {
 				window.location.hash = 'office';
-				var viewerURL = collaboraApp + "?WOPISrc=" + encodeURIComponent(response.wopi_src);
+				var viewerURL = collaboraApp + "?WOPISrc=" + encodeURI(response.wopi_src);
 				if (iFrame) {
 					viewerURL += "&closebutton=1";
 				}
