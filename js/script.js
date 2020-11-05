@@ -53,6 +53,7 @@
     ]
 
     var collaboraApp;
+    var office_frame;
 
     var loadConfig = function() {
         // For now just use the endpoints provided by wopi
@@ -77,6 +78,7 @@
     }
 
     var closeDocument = function(e) {
+        office_frame.src = "about:blank"; // force redirect so that the page knows it closed?
         $("#office_container").remove();
         window.location.hash = '';
         $(window).unbind('popstate', closeDocument);
@@ -93,7 +95,7 @@
         $('#content').append(view);
 
         var frameholder = document.getElementById('frameholder');
-        var office_frame = document.createElement('iframe');
+        office_frame = document.createElement('iframe');
         office_frame.name = 'office_frame';
         office_frame.id = 'office_frame';
         // The title should be set for accessibility
@@ -163,11 +165,11 @@
         }
         filename = data.dir + "/" + basename;
 
-        _open(filename, canedit);
+        _open(filename, canedit, false);
 
     };
 
-    var _open = function(filename, canedit) {
+    var _open = function(filename, canedit, forceIFrame) {
         var data = { filename: filename };
         var url = "";
         // check if we are on a public page
@@ -192,7 +194,7 @@
                     viewerURL += "&permission=readonly";
                 }
 
-                if (iFrame) {
+                if (forceIFrame || iFrame) {
                     setView(viewerURL, response.wopi_src);
                 } else {
                     window.open(viewerURL, '_blank');
@@ -257,7 +259,7 @@
         defaultMimes.forEach(defaultmime => {
             if (mime === defaultmime) {
 
-                _open(filename, false);
+                _open(filename, false, true);
             }
         })
 
