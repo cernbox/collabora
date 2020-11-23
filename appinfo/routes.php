@@ -1,23 +1,12 @@
 <?php
-/**
- * ownCloud - collabora
- *
- * This file is licensed under the Affero General Public License version 3 or
- * later. See the COPYING file.
- *
- * @author Hugo Gonzalez Labrador (CERN) <hugo.gonzalez.labrador@cern.ch>
- * @copyright Hugo Gonzalez Labrador (CERN) 2017
- */
+namespace OCA\Collabora\AppInfo;
 
-/**
- * Create your routes in here. The name is the lowercase name of the controller
- * without the controller part, the stuff after the hash is the method.
- * e.g. page#index -> OCA\Collabora\Controller\PageController->index()
- *
- * The controller class has to be registered in the application.php file since
- * it's instantiated in there
- */
-return [
+$application = new Application();
+$application->registerRoutes($this, [
     'routes' => [
+        ['name' => 'editor#view', 'url' => '/view{file}', 'verb' => 'GET', 'requirements' => ['file' => '.+']],
+        ['name' => 'editor#edit', 'url' => '/edit{file}', 'verb' => 'GET', 'requirements' => ['file' => '.+']],
+        ['name' => 'editor#viewpl', 'url' => '/public/{token}/view{file}', 'verb' => 'GET', 'requirements' => ['file' => '.+']],
+        ['name' => 'editor#editpl', 'url' => '/public/{token}/edit{file}', 'verb' => 'GET', 'requirements' => ['file' => '.+']],
     ]
-];
+]);
