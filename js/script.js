@@ -192,7 +192,17 @@
             url = OC.generateUrl('/apps/wopiviewer/publicopen');
             data['token'] = pl_token;
             data['folderurl'] = parent.location.protocol + '//' + location.host + OC.generateUrl('/s/') + pl_token + '?path=' + OC.dirname(data.filename);
-            headers['X-Access-Token'] = getUrlParameter('X-Access-Token');
+            headers['X-Access-Token'] = x_access_token;
+
+            if (x_access_token == null) {
+                $('#app').html('<div id="loader">This page should be opened from its public link. Redirecting...</div>');
+                var redirect_user = function() {
+                    window.location.href = OC.generateUrl('/s/') + pl_token + '?path=' + OC.dirname(data.filename)
+                }
+                setTimeout(redirect_user, 700);
+                return;
+            }
+
         } else if (isPublicPage()) {
             url = OC.generateUrl('/apps/wopiviewer/publicopen');
             var token = getSharingToken();

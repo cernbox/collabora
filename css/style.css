@@ -40,3 +40,12 @@
 .icon-powerpoint {
 	background-image: url('../../../core/img/filetypes/x-office-presentation.svg');
 }
+
+#loader {
+    text-align: center;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2em;
+    color: #4f4f4f;
+}
